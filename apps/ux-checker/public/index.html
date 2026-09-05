@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluador UX — prieto.digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── CONFIG VISUAL ─────────────────────────────────────────── */
+:root {
+  --bg:        #0D0D1A;
+  --surface:   #14142A;
+  --surface2:  #1C1C38;
+  --border:    rgba(255,255,255,0.07);
+  --border2:   rgba(255,255,255,0.13);
+  --text:      #EDEAF5;
+  --muted:     #7A7690;
+  --subtle:    #2E2E52;
+  --accent:    #E05C3A;
+  --accent-bg: rgba(224,92,58,0.10);
+  --green:     #2DD4A4;
+  --green-bg:  rgba(45,212,164,0.10);
+  --amber:     #FBB024;
+  --amber-bg:  rgba(251,176,36,0.10);
+  --blue:      #6B8EFF;
+  --blue-bg:   rgba(107,142,255,0.10);
+  --r:         10px;
+  --r-sm:      6px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ── LAYOUT ──────────────────────────────────────────────── */
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ── PANTALLA: INPUT ─────────────────────────────────────── */
+#screen-input {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+}
+.input-card {
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+.input-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.25rem;
+}
+.input-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: .75rem;
+}
+.input-title strong { font-weight: 600; }
+.input-sub {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* Tabs de modo de entrada */
+.mode-tabs {
+  display: inline-flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 3px;
+  margin-bottom: 1.5rem;
+}
+.mode-tab {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 20px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.mode-tab.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.mode-panel { display: none; }
+.mode-panel.active { display: block; }
+
+.url-field {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  overflow: hidden;
+  background: var(--surface);
+  transition: border-color .2s;
+  margin-bottom: .75rem;
+}
+.url-field:focus-within { border-color: var(--accent); }
+.url-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  padding: 14px 18px;
+}
+.url-input::placeholder { color: var(--muted); }
+.eval-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 14px 24px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity .2s;
+  white-space: nowrap;
+}
+.eval-btn:hover { opacity: .88; }
+.eval-btn:disabled { opacity: .4; cursor: not-allowed; }
+.input-note {
+  font-size: 12px;
+  color: var(--muted);
+}
+.input-note a { color: var(--blue); text-decoration: none; }
+
+/* Drop zone de imagen */
+.drop-zone {
+  border: 1.5px dashed var(--border2);
+  border-radius: var(--r);
+  background: var(--surface);
+  padding: 2.5rem 1.5rem;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  margin-bottom: .75rem;
+}
+.drop-zone.dragover {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+.drop-zone-icon { font-size: 1.75rem; margin-bottom: .75rem; }
+.drop-zone-text { font-size: 13.5px; color: var(--muted); }
+.drop-zone-text strong { color: var(--text); font-weight: 500; }
+.drop-zone input[type="file"] { display: none; }
+
+.preview-wrap {
+  display: none;
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  overflow: hidden;
+  background: var(--surface);
+  margin-bottom: .75rem;
+  position: relative;
+}
+.preview-wrap.active { display: block; }
+.preview-img {
+  display: block;
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  object-position: top;
+}
+.preview-remove {
+  position: absolute;
+  top: 10px; right: 10px;
+  background: rgba(13,13,26,0.85);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+.image-eval-btn {
+  width: 100%;
+}
+
+/* ── PANTALLA: LOADING ───────────────────────────────────── */
+#screen-loading {
+  display: none;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+}
+.loading-card {
+  width: 100%;
+  max-width: 480px;
+  text-align: center;
+}
+.loading-url {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 2rem;
+  word-break: break-all;
+}
+.loading-url span { color: var(--accent); }
+.scan-ring {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  border: 2px solid var(--subtle);
+  border-top-color: var(--accent);
+  margin: 0 auto 2rem;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-phases {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 2rem;
+}
+.phase {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--muted);
+  padding: 10px 16px;
+  border-radius: var(--r-sm);
+  transition: all .3s;
+}
+.phase.active {
+  background: var(--surface);
+  color: var(--text);
+  border-left: 2px solid var(--accent);
+}
+.phase.done {
+  color: var(--green);
+}
+.phase-icon { font-size: 14px; min-width: 18px; }
+.loading-bar {
+  height: 2px;
+  background: var(--subtle);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.loading-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 1px;
+  transition: width .4s ease;
+  width: 0%;
+}
+
+/* ── PANTALLA: ERROR ─────────────────────────────────────── */
+#screen-error {
+  display: none;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+}
+.error-card {
+  max-width: 460px;
+  text-align: center;
+}
+.error-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+.error-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: .5rem;
+}
+.error-msg { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; }
+.retry-btn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 10px 20px;
+  border-radius: var(--r-sm);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.retry-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── PANTALLA: REPORTE ───────────────────────────────────── */
+#screen-report {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  padding: 2rem 0 4rem;
+}
+
+.report-header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
+}
+.report-url {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: .25rem;
+  word-break: break-all;
+}
+.report-url a { color: var(--muted); text-decoration: none; }
+.report-url a:hover { color: var(--text); }
+.report-date { font-size: 11px; color: var(--subtle); }
+
+/* Evidencia: captura analizada */
+.evidence-wrap {
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  background: var(--surface);
+}
+.evidence-img {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  object-position: top;
+}
+.evidence-label {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* Score general */
+.score-block {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.5rem;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.score-ring-wrap {
+  position: relative;
+  width: 80px; height: 80px; flex-shrink: 0;
+}
+.score-svg { transform: rotate(-90deg); }
+.score-track { fill: none; stroke: var(--subtle); stroke-width: 5; }
+.score-arc  { fill: none; stroke-width: 5; stroke-linecap: round;
+              stroke-dasharray: 220; stroke-dashoffset: 220;
+              transition: stroke-dashoffset 1.2s ease; }
+.score-num {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.score-info {}
+.score-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+  margin-bottom: .25rem;
+}
+.score-verdict {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: .35rem;
+}
+.score-resumen { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* Distribución de severidad */
+.sev-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+.sev-cell {
+  background: var(--surface);
+  padding: 12px;
+  text-align: center;
+}
+.sev-count {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.sev-name { font-size: 11px; color: var(--muted); }
+
+/* Heurísticas */
+.heur-section-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: .875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+.heur-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 2.5rem;
+}
+.heur-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.heur-card:hover { border-color: var(--border2); }
+.heur-top {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: .75rem;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+.heur-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.heur-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.3;
+}
+.sev-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: 3px 10px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+.sev-critico  { background: var(--accent-bg); color: var(--accent);  border: 1px solid rgba(224,92,58,0.2); }
+.sev-moderado { background: var(--amber-bg);  color: var(--amber);   border: 1px solid rgba(251,176,36,0.2); }
+.sev-leve     { background: var(--blue-bg);   color: var(--blue);    border: 1px solid rgba(107,142,255,0.2); }
+.sev-ok       { background: var(--green-bg);  color: var(--green);   border: 1px solid rgba(45,212,164,0.2); }
+
+.heur-body {
+  display: none;
+  border-top: 1px solid var(--border);
+  padding: 14px 16px 16px 56px;
+}
+.heur-body.open { display: block; }
+.heur-hallazgo {
+  font-size: 13.5px;
+  color: var(--muted);
+  margin-bottom: .75rem;
+  line-height: 1.65;
+}
+.heur-hallazgo strong { color: var(--text); font-weight: 500; }
+.heur-score-line {
+  font-size: 12px;
+  color: var(--subtle);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.score-pip {
+  display: inline-flex;
+  gap: 2px;
+}
+.pip {
+  width: 10px; height: 4px; border-radius: 2px;
+  background: var(--subtle);
+}
+.pip.on-critico  { background: var(--accent); }
+.pip.on-moderado { background: var(--amber); }
+.pip.on-leve     { background: var(--blue); }
+.pip.on-ok       { background: var(--green); }
+
+/* Footer */
+.report-footer-bar {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+}
+.powered { display: flex; align-items: center; gap: 6px; }
+.powered-dot {
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+@media (max-width: 600px) {
+  .score-block { grid-template-columns: 1fr; }
+  .sev-strip { grid-template-columns: repeat(2, 1fr); }
+  .heur-body { padding-left: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page" id="app">
+
+  <!-- ── PANTALLA: INPUT ── -->
+  <div id="screen-input">
+    <div class="input-card">
+      <div class="input-eyebrow">Análisis heurístico gratuito</div>
+      <h1 class="input-title">¿Tu sitio<br><strong>ayuda o frustra a tus usuarios?</strong></h1>
+      <p class="input-sub">Evaluamos las 10 heurísticas de Nielsen con evidencia real — navegamos tu sitio o analizamos tu captura. Sin costo. Sin registro.</p>
+
+      <div class="mode-tabs">
+        <button class="mode-tab active" id="tabUrl" onclick="switchMode('url')">Analizar URL</button>
+        <button class="mode-tab" id="tabImage" onclick="switchMode('image')">Subir captura</button>
+      </div>
+
+      <!-- Modo: URL -->
+      <div class="mode-panel active" id="panelUrl">
+        <div class="url-field">
+          <input
+            type="url"
+            class="url-input"
+            id="urlInput"
+            placeholder="https://tusitio.com"
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <button class="eval-btn" id="evalUrlBtn" onclick="startUrlEval()">Evaluar →</button>
+        </div>
+        <p class="input-note">Navegamos tu sitio con un navegador real y capturamos la pantalla para evaluarla.</p>
+      </div>
+
+      <!-- Modo: Imagen -->
+      <div class="mode-panel" id="panelImage">
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+          <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp">
+          <div class="drop-zone-icon">📎</div>
+          <div class="drop-zone-text"><strong>Arrastra tu captura aquí</strong> o haz clic para elegir un archivo<br>PNG, JPG o WebP · máx. 8 MB</div>
+        </div>
+        <div class="preview-wrap" id="previewWrap">
+          <button class="preview-remove" onclick="clearImage(event)">✕</button>
+          <img class="preview-img" id="previewImg" alt="Captura a evaluar">
+        </div>
+        <button class="eval-btn image-eval-btn" id="evalImageBtn" onclick="startImageEval()" disabled>Evaluar captura →</button>
+        <p class="input-note">Ideal para pantallas privadas, apps internas o flujos detrás de login.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PANTALLA: LOADING ── -->
+  <div id="screen-loading" style="display:none; flex:1; align-items:center; justify-content:center; padding:4rem 1.5rem;">
+    <div class="loading-card">
+      <div class="loading-url">Analizando <span id="loadingUrl"></span></div>
+      <div class="scan-ring"></div>
+      <div class="loading-phases" id="phases">
+        <div class="phase" id="ph0"><span class="phase-icon">🔍</span> Accediendo al sitio</div>
+        <div class="phase" id="ph1"><span class="phase-icon">🧩</span> Analizando estructura y navegación</div>
+        <div class="phase" id="ph2"><span class="phase-icon">⚖️</span> Evaluando heurísticas de Nielsen</div>
+        <div class="phase" id="ph3"><span class="phase-icon">📋</span> Generando reporte</div>
+      </div>
+      <div class="loading-bar"><div class="loading-fill" id="loadingFill"></div></div>
+    </div>
+  </div>
+
+  <!-- ── PANTALLA: ERROR ── -->
+  <div id="screen-error" style="display:none; flex:1; align-items:center; justify-content:center; padding:4rem 1.5rem;">
+    <div class="error-card">
+      <div class="error-icon">⚠️</div>
+      <div class="error-title">No pudimos completar el análisis</div>
+      <p class="error-msg" id="errorMsg">El servidor tardó demasiado en responder. Verifica la URL e intenta de nuevo.</p>
+      <button class="retry-btn" onclick="reset()">← Intentar de nuevo</button>
+    </div>
+  </div>
+
+  <!-- ── PANTALLA: REPORTE ── -->
+  <div id="screen-report" style="display:none; flex:1; flex-direction:column; padding:2rem 0 4rem;">
+    <div class="container">
+
+      <div class="report-header">
+        <div class="report-url" id="reportUrlWrap"><a id="reportUrlTxt" href="#" target="_blank" rel="noopener"></a></div>
+        <div class="report-date" id="reportDate"></div>
+      </div>
+
+      <div class="evidence-wrap" id="evidenceWrap" style="display:none;">
+        <img class="evidence-img" id="evidenceImg" alt="Captura analizada">
+        <div class="evidence-label">Captura analizada por Claude</div>
+      </div>
+
+      <!-- Score general -->
+      <div class="score-block">
+        <div class="score-ring-wrap">
+          <svg class="score-svg" width="80" height="80" viewBox="0 0 80 80">
+            <circle class="score-track" cx="40" cy="40" r="35"/>
+            <circle class="score-arc"   cx="40" cy="40" r="35" id="scoreArc"/>
+          </svg>
+          <div class="score-num" id="scoreNum">—</div>
+        </div>
+        <div class="score-info">
+          <div class="score-label">Score general</div>
+          <div class="score-verdict" id="scoreVerdict"></div>
+          <div class="score-resumen" id="scoreResumen"></div>
+        </div>
+      </div>
+
+      <!-- Distribución -->
+      <div class="sev-strip" id="sevStrip"></div>
+
+      <!-- Lista heurísticas -->
+      <div class="heur-section-title">Hallazgos por heurística</div>
+      <div class="heur-list" id="heurList"></div>
+
+      <div class="report-footer-bar">
+        <button class="another-btn" onclick="reset()" style="background:transparent;border:none;color:var(--muted);font-family:inherit;font-size:13px;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px;">← Evaluar otro</button>
+        <div class="powered"><div class="powered-dot"></div> Impulsado por Claude · prieto.digital</div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   ESTADO Y MODO DE ENTRADA
+   ══════════════════════════════════════════════════════════ */
+let currentMode = 'url';
+let selectedImage = null; // { base64, mediaType, previewUrl }
+
+function switchMode(mode) {
+  currentMode = mode;
+  document.getElementById('tabUrl').classList.toggle('active', mode === 'url');
+  document.getElementById('tabImage').classList.toggle('active', mode === 'image');
+  document.getElementById('panelUrl').classList.toggle('active', mode === 'url');
+  document.getElementById('panelImage').classList.toggle('active', mode === 'image');
+}
+
+/* ══════════════════════════════════════════════════════════
+   UTILIDADES DE UI
+   ══════════════════════════════════════════════════════════ */
+const SEV = {
+  critico:  { label:'Crítico',  css:'sev-critico',  pip:'on-critico' },
+  moderado: { label:'Moderado', css:'sev-moderado', pip:'on-moderado' },
+  leve:     { label:'Leve',     css:'sev-leve',     pip:'on-leve' },
+  ok:       { label:'Sin problema', css:'sev-ok',   pip:'on-ok' }
+};
+
+const SCORE_COLORS = { low: '#E05C3A', mid: '#FBB024', high: '#2DD4A4' };
+
+function scoreColor(s) {
+  if (s < 4) return SCORE_COLORS.low;
+  if (s < 7) return SCORE_COLORS.mid;
+  return SCORE_COLORS.high;
+}
+
+function scoreVerdict(s) {
+  if (s < 4) return 'Problemas críticos que afectan la experiencia';
+  if (s < 6) return 'Experiencia mejorable — hay trabajo por hacer';
+  if (s < 8) return 'Buena base con oportunidades claras';
+  return 'Experiencia sólida — detalles por pulir';
+}
+
+function pips(sev, score) {
+  const total = 5;
+  const filled = Math.round((score / 10) * total);
+  const cls = SEV[sev]?.pip || 'on-ok';
+  return Array.from({length:total}, (_,i) =>
+    `<span class="pip ${i < filled ? cls : ''}"></span>`
+  ).join('');
+}
+
+function show(id) {
+  ['screen-input','screen-loading','screen-error','screen-report'].forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.style.display = s === id ? 'flex' : 'none';
+  });
+}
+
+function reset() {
+  show('screen-input');
+  document.getElementById('urlInput').value = '';
+  clearImage();
+}
+
+/* ══════════════════════════════════════════════════════════
+   CARGA DE IMAGEN (drag & drop + file picker)
+   ══════════════════════════════════════════════════════════ */
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+fileInput.addEventListener('change', () => {
+  if (fileInput.files[0]) handleImageFile(fileInput.files[0]);
+});
+
+['dragenter', 'dragover'].forEach(evt =>
+  dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add('dragover'); })
+);
+['dragleave', 'drop'].forEach(evt =>
+  dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.remove('dragover'); })
+);
+dropZone.addEventListener('drop', e => {
+  const file = e.dataTransfer.files[0];
+  if (file) handleImageFile(file);
+});
+
+function handleImageFile(file) {
+  if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+    alert('Formato no soportado. Usa PNG, JPG o WebP.');
+    return;
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    alert('La imagen supera los 8 MB. Comprímela e intenta de nuevo.');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const dataUrl = reader.result;
+    const base64 = dataUrl.split(',')[1];
+    selectedImage = { base64, mediaType: file.type, previewUrl: dataUrl };
+    document.getElementById('previewImg').src = dataUrl;
+    document.getElementById('previewWrap').classList.add('active');
+    dropZone.style.display = 'none';
+    document.getElementById('evalImageBtn').disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImage(e) {
+  if (e) e.stopPropagation();
+  selectedImage = null;
+  fileInput.value = '';
+  document.getElementById('previewWrap').classList.remove('active');
+  dropZone.style.display = 'block';
+  document.getElementById('evalImageBtn').disabled = true;
+}
+
+/* ══════════════════════════════════════════════════════════
+   LOADING ANIMATION
+   ══════════════════════════════════════════════════════════ */
+let phaseTimer = null;
+
+function runPhases(labelUrlText) {
+  document.getElementById('loadingUrl').textContent = labelUrlText;
+  show('screen-loading');
+  document.querySelectorAll('.phase').forEach(p => p.classList.remove('active','done'));
+  document.getElementById('loadingFill').style.width = '0%';
+
+  const phases = [
+    { id:'ph0', progress:20, delay:0 },
+    { id:'ph1', progress:45, delay:1200 },
+    { id:'ph2', progress:75, delay:3000 },
+    { id:'ph3', progress:92, delay:6000 },
+  ];
+  phases.forEach(({id, progress, delay}) => {
+    setTimeout(() => {
+      document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
+      const ph = document.getElementById(id);
+      if (ph) ph.classList.add('active');
+      document.getElementById('loadingFill').style.width = progress + '%';
+    }, delay);
+  });
+}
+
+function finishPhases() {
+  document.querySelectorAll('.phase').forEach(p => p.classList.add('done'));
+  document.getElementById('loadingFill').style.width = '100%';
+}
+
+/* ══════════════════════════════════════════════════════════
+   RENDER REPORTE
+   ══════════════════════════════════════════════════════════ */
+function renderReport(data) {
+  const urlWrap = document.getElementById('reportUrlWrap');
+  const urlEl = document.getElementById('reportUrlTxt');
+  if (data.url) {
+    urlWrap.style.display = 'block';
+    urlEl.textContent = data.url;
+    urlEl.href = data.url;
+  } else {
+    urlWrap.style.display = 'none';
+  }
+
+  document.getElementById('reportDate').textContent =
+    'Evaluado el ' + new Date(data.fecha || Date.now()).toLocaleDateString('es-CO', { day:'numeric', month:'long', year:'numeric' });
+
+  const evidenceWrap = document.getElementById('evidenceWrap');
+  if (data.screenshot) {
+    document.getElementById('evidenceImg').src = data.screenshot;
+    evidenceWrap.style.display = 'block';
+  } else {
+    evidenceWrap.style.display = 'none';
+  }
+
+  // Score ring
+  const score = parseFloat(data.score_general);
+  const arc   = document.getElementById('scoreArc');
+  const circ  = 2 * Math.PI * 35;
+  const color = scoreColor(score);
+  arc.style.stroke = color;
+  setTimeout(() => { arc.style.strokeDashoffset = circ - (score / 10) * circ; }, 100);
+
+  const numEl = document.getElementById('scoreNum');
+  numEl.style.color = color;
+  let current = 0;
+  const step = score / 30;
+  const interval = setInterval(() => {
+    current = Math.min(current + step, score);
+    numEl.textContent = current.toFixed(1);
+    if (current >= score) clearInterval(interval);
+  }, 40);
+
+  document.getElementById('scoreVerdict').textContent = scoreVerdict(score);
+  document.getElementById('scoreResumen').textContent = data.resumen;
+
+  // Distribución
+  const counts = { critico:0, moderado:0, leve:0, ok:0 };
+  data.heuristicas.forEach(h => { if (counts[h.severidad] !== undefined) counts[h.severidad]++; });
+  document.getElementById('sevStrip').innerHTML = [
+    { key:'critico',  label:'Crítico',   color:'var(--accent)' },
+    { key:'moderado', label:'Moderado',  color:'var(--amber)' },
+    { key:'leve',     label:'Leve',      color:'var(--blue)' },
+    { key:'ok',       label:'Sin problema', color:'var(--green)' }
+  ].map(s => `
+    <div class="sev-cell">
+      <div class="sev-count" style="color:${s.color}">${counts[s.key]}</div>
+      <div class="sev-name">${s.label}</div>
+    </div>
+  `).join('');
+
+  // Heurísticas
+  const list = document.getElementById('heurList');
+  list.innerHTML = data.heuristicas.map(h => {
+    const s = SEV[h.severidad] || SEV.ok;
+    return `
+      <div class="heur-card">
+        <div class="heur-top" onclick="toggleHeur(this)">
+          <div class="heur-num">H${h.id}</div>
+          <div class="heur-name">${escapeHtml(h.nombre)}</div>
+          <div class="sev-badge ${s.css}">${s.label}</div>
+        </div>
+        <div class="heur-body">
+          <div class="heur-hallazgo">${escapeHtml(h.hallazgo)}</div>
+          <div class="heur-score-line">
+            <span class="score-pip">${pips(h.severidad, h.score)}</span>
+            <span>${h.score}/10</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  show('screen-report');
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function toggleHeur(topEl) {
+  topEl.nextElementSibling.classList.toggle('open');
+}
+
+/* ══════════════════════════════════════════════════════════
+   FLUJO PRINCIPAL
+   ══════════════════════════════════════════════════════════ */
+async function callAnalyze(payload, loadingLabel) {
+  runPhases(loadingLabel);
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 55000);
+
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || `HTTP ${res.status}`);
+    }
+
+    finishPhases();
+    setTimeout(() => renderReport(data), 400);
+
+  } catch (err) {
+    clearTimeout(phaseTimer);
+    const msg = err.name === 'AbortError'
+      ? 'El análisis tardó más de lo esperado. Intenta con un sitio más liviano o con una captura.'
+      : (err.message || 'No pudimos conectar con el servidor de análisis. Intenta de nuevo.');
+    document.getElementById('errorMsg').textContent = msg;
+    show('screen-error');
+  }
+}
+
+function startUrlEval() {
+  const urlInput = document.getElementById('urlInput');
+  let url = urlInput.value.trim();
+  if (!url) { urlInput.focus(); return; }
+
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'https://' + url;
+  }
+  try { new URL(url); } catch(e) {
+    urlInput.style.borderColor = 'var(--accent)';
+    urlInput.focus();
+    return;
+  }
+
+  callAnalyze({ mode: 'url', url }, url);
+}
+
+function startImageEval() {
+  if (!selectedImage) return;
+  callAnalyze(
+    { mode: 'image', image: selectedImage.base64, mediaType: selectedImage.mediaType },
+    'tu captura'
+  );
+}
+
+document.getElementById('urlInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startUrlEval();
+});
+</script>
+</body>
+</html>

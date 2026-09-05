@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "api/analyze.ts": {
+      "memory": 2048,
+      "maxDuration": 60
+    }
+  }
+}
