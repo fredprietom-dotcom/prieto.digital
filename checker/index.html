@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Evaluador UX — prieto.digital</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Google+Sans+Flex:wght@700&family=Zalando+Sans+SemiExpanded:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Google+Sans+Flex:wght@700&display=swap" rel="stylesheet">
 <style>
 /* ── CONFIG VISUAL ─────────────────────────────────────────── */
 :root {
@@ -37,7 +37,7 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  font-size: 16px;
+  font-size: 17.6px;
   line-height: 1.55;
 }
 
@@ -56,6 +56,36 @@ body {
   padding: 0 1.5rem;
 }
 
+/* ── HEADER (marca) ─────────────────────────────────────── */
+.pd-header {
+  min-height: 4.95rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.pd-header-inner {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+}
+.pd-site-title {
+  font-family: 'Google Sans Flex', sans-serif;
+  font-size: clamp(0.9625rem, 0.9625rem + 0.6vw, 1.32rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--text);
+  text-decoration: none;
+  display: inline-block;
+}
+.pd-site-title:hover { color: var(--accent); }
+.pd-site-tagline {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
 /* ── PANTALLA: INPUT ─────────────────────────────────────── */
 #screen-input {
   flex: 1;
@@ -70,8 +100,7 @@ body {
   text-align: center;
 }
 .input-eyebrow {
-  font-family: 'Zalando Sans SemiExpanded', sans-serif;
-  font-size: 11px;
+  font-size: 12.1px;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -80,7 +109,7 @@ body {
 }
 .input-title {
   font-family: 'Google Sans Flex', sans-serif;
-  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-size: clamp(1.925rem, 4.4vw, 3.025rem);
   font-weight: 700;
   color: var(--text);
   line-height: 1.2;
@@ -89,7 +118,7 @@ body {
 }
 .input-title strong { font-weight: 700; }
 .input-sub {
-  font-size: 14px;
+  font-size: 15.4px;
   color: var(--muted);
   margin-bottom: 2.5rem;
   line-height: 1.6;
@@ -112,7 +141,7 @@ body {
   outline: none;
   color: var(--text);
   font-family: 'Libre Franklin', sans-serif;
-  font-size: 15px;
+  font-size: 16.5px;
   padding: 14px 18px;
 }
 .url-input::placeholder { color: var(--muted); }
@@ -122,7 +151,7 @@ body {
   border: none;
   padding: 14px 24px;
   font-family: 'Libre Franklin', sans-serif;
-  font-size: 13px;
+  font-size: 14.3px;
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -133,7 +162,7 @@ body {
 .eval-btn:hover { opacity: .88; }
 .eval-btn:disabled { opacity: .4; cursor: not-allowed; }
 .input-note {
-  font-size: 12px;
+  font-size: 13.2px;
   color: var(--muted);
 }
 .input-note a { color: var(--blue); text-decoration: none; }
@@ -152,7 +181,7 @@ body {
   text-align: center;
 }
 .loading-url {
-  font-size: 12px;
+  font-size: 13.2px;
   color: var(--muted);
   margin-bottom: 2rem;
   word-break: break-all;
@@ -177,7 +206,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 13px;
+  font-size: 14.3px;
   color: var(--muted);
   padding: 10px 16px;
   border-radius: var(--r-sm);
@@ -191,7 +220,7 @@ body {
 .phase.done {
   color: var(--green);
 }
-.phase-icon { font-size: 14px; min-width: 18px; }
+.phase-icon { font-size: 15.4px; min-width: 18px; }
 .loading-bar {
   height: 2px;
   background: var(--subtle);
@@ -218,15 +247,15 @@ body {
   max-width: 460px;
   text-align: center;
 }
-.error-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+.error-icon { font-size: 2.75rem; margin-bottom: 1rem; }
 .error-title {
   font-family: 'Google Sans Flex', sans-serif;
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   font-weight: 700;
   color: var(--text);
   margin-bottom: .5rem;
 }
-.error-msg { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; }
+.error-msg { font-size: 14.3px; color: var(--muted); margin-bottom: 1.5rem; }
 .retry-btn {
   background: transparent;
   border: 1px solid var(--border2);
@@ -234,7 +263,7 @@ body {
   padding: 10px 20px;
   border-radius: var(--r-sm);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 15.4px;
   cursor: pointer;
   transition: border-color .2s;
 }
@@ -255,14 +284,14 @@ body {
   margin-bottom: 2rem;
 }
 .report-url {
-  font-size: 12px;
+  font-size: 13.2px;
   color: var(--muted);
   margin-bottom: .25rem;
   word-break: break-all;
 }
 .report-url a { color: var(--muted); text-decoration: none; }
 .report-url a:hover { color: var(--text); }
-.report-date { font-size: 11px; color: var(--subtle); }
+.report-date { font-size: 12.1px; color: var(--subtle); }
 
 /* Score general */
 .score-block {
@@ -292,14 +321,13 @@ body {
   align-items: center;
   justify-content: center;
   font-family: 'Google Sans Flex', sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.54rem;
   font-weight: 700;
   color: var(--text);
 }
 .score-info {}
 .score-label {
-  font-family: 'Zalando Sans SemiExpanded', sans-serif;
-  font-size: 11px;
+  font-size: 12.1px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: .08em;
@@ -308,12 +336,12 @@ body {
 }
 .score-verdict {
   font-family: 'Google Sans Flex', sans-serif;
-  font-size: 1.1rem;
+  font-size: 1.21rem;
   font-weight: 700;
   color: var(--text);
   margin-bottom: .35rem;
 }
-.score-resumen { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.score-resumen { font-size: 14.3px; color: var(--muted); line-height: 1.6; }
 
 /* Distribución de severidad */
 .sev-strip {
@@ -333,23 +361,43 @@ body {
 }
 .sev-count {
   font-family: 'Google Sans Flex', sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.65rem;
   font-weight: 700;
   line-height: 1;
   margin-bottom: 3px;
 }
-.sev-name { font-size: 11px; color: var(--muted); }
+.sev-name { font-size: 12.1px; color: var(--muted); }
 
 /* Heurísticas */
+.heur-section-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
 .heur-section-title {
-  font-family: 'Zalando Sans SemiExpanded', sans-serif;
-  font-size: .875rem;
+  font-size: .9625rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: .08em;
   color: var(--muted);
-  margin-bottom: 1rem;
+  margin-bottom: 0;
 }
+.heur-toggle-all {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: 13.2px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+.heur-toggle-all:hover { opacity: .8; }
 .heur-list {
   display: flex;
   flex-direction: column;
@@ -374,18 +422,18 @@ body {
 }
 .heur-num {
   font-family: 'Google Sans Flex', sans-serif;
-  font-size: 11px;
+  font-size: 12.1px;
   font-weight: 700;
   color: var(--muted);
 }
 .heur-name {
-  font-size: 14px;
+  font-size: 15.4px;
   font-weight: 500;
   color: var(--text);
   line-height: 1.3;
 }
 .sev-badge {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .06em;
@@ -405,14 +453,14 @@ body {
 }
 .heur-body.open { display: block; }
 .heur-hallazgo {
-  font-size: 13.5px;
+  font-size: 14.85px;
   color: var(--muted);
   margin-bottom: .75rem;
   line-height: 1.65;
 }
 .heur-hallazgo strong { color: var(--text); font-weight: 500; }
 .heur-score-line {
-  font-size: 12px;
+  font-size: 13.2px;
   color: var(--muted);
   display: flex;
   align-items: center;
@@ -448,8 +496,7 @@ body {
   background: linear-gradient(90deg, var(--accent), var(--amber));
 }
 .cta-eyebrow {
-  font-family: 'Zalando Sans SemiExpanded', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .1em;
@@ -458,14 +505,14 @@ body {
 }
 .cta-title {
   font-family: 'Google Sans Flex', sans-serif;
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   font-weight: 700;
   color: var(--text);
   margin-bottom: .5rem;
   line-height: 1.3;
 }
 .cta-desc {
-  font-size: 13.5px;
+  font-size: 14.85px;
   color: var(--muted);
   margin-bottom: 1.5rem;
   line-height: 1.65;
@@ -480,7 +527,7 @@ body {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  font-size: 13px;
+  font-size: 14.3px;
   color: var(--muted);
 }
 .cta-feat::before {
@@ -503,7 +550,7 @@ body {
   padding: 12px 24px;
   border-radius: var(--r-sm);
   font-family: 'Libre Franklin', sans-serif;
-  font-size: 13px;
+  font-size: 14.3px;
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -515,17 +562,17 @@ body {
 .cta-primary:hover { opacity: .88; }
 .cta-price {
   font-family: 'Google Sans Flex', sans-serif;
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   font-weight: 700;
   color: var(--text);
 }
-.cta-price-sub { font-size: 11px; color: var(--muted); display: block; }
+.cta-price-sub { font-size: 12.1px; color: var(--muted); display: block; }
 .another-btn {
   background: transparent;
   border: none;
   color: var(--muted);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 14.3px;
   cursor: pointer;
   padding: 0;
   margin-top: 1.25rem;
@@ -542,7 +589,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: 12.1px;
   color: var(--muted);
 }
 .powered { display: flex; align-items: center; gap: 6px; }
@@ -565,6 +612,13 @@ body {
 <body>
 
 <div class="page" id="app">
+
+  <header class="pd-header">
+    <div class="pd-header-inner">
+      <a href="https://prieto.digital" class="pd-site-title">prieto.digital</a>
+      <div class="pd-site-tagline">Design for better lives</div>
+    </div>
+  </header>
 
   <!-- ── PANTALLA: INPUT ── -->
   <div id="screen-input">
@@ -642,7 +696,10 @@ body {
       <div class="sev-strip" id="sevStrip"></div>
 
       <!-- Lista heurísticas -->
-      <div class="heur-section-title">Hallazgos por heurística</div>
+      <div class="heur-section-row">
+        <div class="heur-section-title">Hallazgos por heurística</div>
+        <button class="heur-toggle-all" id="heurToggleAll" onclick="toggleAllHeur()">Expandir todos</button>
+      </div>
       <div class="heur-list" id="heurList"></div>
 
       <!-- CTA Tier 1 -->
@@ -855,12 +912,23 @@ function renderReport(data) {
     `;
   }).join('');
 
+  const toggleAllBtn = document.getElementById('heurToggleAll');
+  if (toggleAllBtn) toggleAllBtn.textContent = 'Expandir todos';
+
   show('screen-report');
 }
 
 function toggleHeur(topEl) {
   const body = topEl.nextElementSibling;
   body.classList.toggle('open');
+}
+
+function toggleAllHeur() {
+  const bodies = document.querySelectorAll('.heur-body');
+  const shouldOpen = Array.from(bodies).some(b => !b.classList.contains('open'));
+  bodies.forEach(b => b.classList.toggle('open', shouldOpen));
+  const toggleAllBtn = document.getElementById('heurToggleAll');
+  if (toggleAllBtn) toggleAllBtn.textContent = shouldOpen ? 'Colapsar todos' : 'Expandir todos';
 }
 
 /* ══════════════════════════════════════════════════════════
